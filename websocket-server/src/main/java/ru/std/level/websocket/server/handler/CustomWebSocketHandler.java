@@ -11,6 +11,6 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
         System.out.println("Получено сообщение от клиента: " + message.getPayload());
 
         // Отправка ответа клиенту
-        session.sendMessage(new TextMessage("Получено сообщение: " + message.getPayload()));
+        session.sendMessage(new TextMessage("Отправлено сообщение: " + message.getPayload()));
     }
 }

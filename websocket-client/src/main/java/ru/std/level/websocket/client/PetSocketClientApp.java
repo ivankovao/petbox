@@ -9,26 +9,58 @@ import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 @SpringBootApplication
 public class PetSocketClientApp {
 
-    public static void main(String[] args) {
+    private static WebSocketSession session;
+
+    public static void main(String[] args) throws IOException {
         SpringApplication.run(PetSocketClientApp.class, args);
 
         // Установка соединения с сервером
         WebSocketClient webSocketClient = new StandardWebSocketClient();
-        WebSocketConnectionManager connectionManager = new WebSocketConnectionManager(webSocketClient, new WebSocketClientHandler(), "ws://localhost:8080/websocket");
+        WebSocketClientHandler webSocketClientHandler = new WebSocketClientHandler();
+        WebSocketConnectionManager connectionManager =
+                new WebSocketConnectionManager(webSocketClient, webSocketClientHandler, "ws://localhost:8080/websocket");
         connectionManager.start();
         System.out.println("Start");
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sendMessages();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            private void sendMessages() throws IOException {
+                Scanner sc = new Scanner(System.in);
+                while (sc.hasNext()) {
+                    String next = sc.next();
+                    session.sendMessage(new TextMessage(next));
+                    if (next.equals("stop")) {
+                        session.close();
+                        break;
+                    }
+                }
+            }
+        };
+        runnable.run();
+
     }
 
     private static class WebSocketClientHandler extends TextWebSocketHandler {
         @Override
-        public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
             System.out.println("Соединение установлено.");
-
+            session = webSocketSession;
             // Отправка сообщения на сервер
-            session.sendMessage(new TextMessage("Привет, сервер!"));
+            webSocketSession.sendMessage(new TextMessage("Привет, сервер!"));
         }
 
         @Override
