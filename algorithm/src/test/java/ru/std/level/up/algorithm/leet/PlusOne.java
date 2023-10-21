@@ -23,24 +23,37 @@ public class PlusOne {
         int dif;
         for (int i = arr.length - 1; i >= 0; i--) {
             dif = arr[i] + cur;
-            cur = dif >= 10 ? 1: 0 ;
-            arr[i]=dif%10;
+            cur = dif >= 10 ? 1 : 0;
+            arr[i] = dif % 10;
         }
         if (cur > 0) {
-            int[] arr2 = new int[arr.length+1];
-            arr2[0]=1;
+            int[] arr2 = new int[arr.length + 1];
+            arr2[0] = 1;
             for (int i = 0; i <= arr.length - 1; i++) {
-                arr2[i+1] = arr[i];
+                arr2[i + 1] = arr[i];
             }
             return arr2;
         }
         return arr;
     }
 
+    private int[] plusOneOptimize(int[] arr) {
+        for (int i = arr.length - 1; i >= 0; i--) {
+            if (arr[i] < 9) {
+                arr[i]++;
+                return arr;
+            }
+            arr[i] = 0;
+        }
+        int[] arr2 = new int[arr.length + 1];
+        arr2[0] = 1;
+        return arr2;
+    }
+
     static Stream<Arguments> plusOne() {
         return Stream.of(
-                Arguments.of(new int[]{1,2,3}, new int[]{1,2,4}),
-                Arguments.of(new int[]{9}, new int[]{1,0}),
+                Arguments.of(new int[]{1, 2, 3}, new int[]{1, 2, 4}),
+                Arguments.of(new int[]{9}, new int[]{1, 0}),
                 Arguments.of(new int[]{0}, new int[]{1}),
                 Arguments.of(new int[]{}, new int[]{1})
         );
